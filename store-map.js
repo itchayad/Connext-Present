@@ -49,7 +49,7 @@
       this.points = [];
       this.colourMode = "format";
       this.showLabels = false;
-      this.zoom = 5;
+      this.zoom = 6;
       this.center = { latitude: 13.2, longitude: 101.2 };
       this.drag = null;
       this.popup = document.createElement("div");
@@ -129,7 +129,7 @@
       const width = this.root.clientWidth || 900;
       const height = this.root.clientHeight || 500;
       if (!this.points.length) {
-        this.zoom = 5;
+        this.zoom = 6;
         this.center = { latitude: 13.2, longitude: 101.2 };
         this.render();
         return;
@@ -142,6 +142,7 @@
       const spanX = Math.max(.0001, maxX - minX);
       const spanY = Math.max(.0001, maxY - minY);
       this.zoom = Math.max(MIN_ZOOM, Math.min(10, Math.floor(Math.log2(Math.min((width - 120) / spanX, (height - 100) / spanY)))));
+      this.zoom = Math.min(MAX_ZOOM, this.zoom + 1);
       this.center = unproject((minX + maxX) / 2, (minY + maxY) / 2, 0);
       this.render();
     }
