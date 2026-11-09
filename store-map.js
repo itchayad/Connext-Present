@@ -63,9 +63,10 @@
 
     bindInteractions() {
       this.root.addEventListener("wheel", event => {
+        if (event.ctrlKey || event.metaKey) return;
         event.preventDefault();
         const rect = this.root.getBoundingClientRect();
-        this.zoomBy(event.deltaY < 0 ? 1 : -1, event.clientX - rect.left, event.clientY - rect.top);
+        this.zoomBy(event.deltaY < 0 ? 1 : -1, (event.clientX - rect.left)/(window.ConnextDisplay?.scaleFor(this.root)||1), (event.clientY - rect.top)/(window.ConnextDisplay?.scaleFor(this.root)||1));
       }, { passive: false });
       this.root.addEventListener("pointerdown", event => {
         if (event.target.closest("button,a")) return;
@@ -76,7 +77,7 @@
       });
       this.root.addEventListener("pointermove", event => {
         if (!this.drag) return;
-        const next = unproject(this.drag.centerX - (event.clientX - this.drag.x), this.drag.centerY - (event.clientY - this.drag.y), this.zoom);
+        const next = unproject(this.drag.centerX - (event.clientX - this.drag.x)/(window.ConnextDisplay?.scaleFor(this.root)||1), this.drag.centerY - (event.clientY - this.drag.y)/(window.ConnextDisplay?.scaleFor(this.root)||1), this.zoom);
         this.center = next;
         this.render();
       });

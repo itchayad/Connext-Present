@@ -1,0 +1,7 @@
+'use strict';
+(function(global){
+ const results=document.getElementById('results'),dock=document.createElement('details');dock.id='reportOptions';dock.className='report-options-dock';dock.setAttribute('data-html2canvas-ignore','true');dock.innerHTML='<summary>ตัวเลือกรายงาน</summary><div class="report-options-body"></div>';document.getElementById('displaySettings').after(dock);const body=dock.lastElementChild,groups=[];
+ document.querySelectorAll('[data-page-panel]').forEach(panel=>{const group=document.createElement('div');group.dataset.reportOptionsPage=panel.dataset.pagePanel;const sources=[...panel.querySelectorAll('.section-head > .controls,#categoryFilter,.region-custom,.promo-mechanics-filter,#categoryScope,#promoNote,#treeNote,#stores > p.muted')];for(const source of sources){const owner=panel.dataset.pagePanel+':'+(source.closest('section')?.id||'page');source.dataset.reportControlOwner=owner;source.setAttribute('data-html2canvas-ignore','true');group.append(source);}body.append(group);groups.push({panel,group});});
+ function sync(){let active=null;for(const entry of groups){const hide=entry.panel.hidden||results.hidden;if(entry.group.hidden!==hide)entry.group.hidden=hide;if(!hide)active=entry;}dock.hidden=!active||!active.group.childNodes.length;}
+ let queued=false;const schedule=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;sync();});};new MutationObserver(schedule).observe(results,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});global.ConnextReportOptions={sync};sync();
+})(window);

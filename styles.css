@@ -58,3 +58,11 @@ body.clean-charts{background:var(--surface)}.clean-charts .section-head,.clean-c
 .report-scope-caption{display:block;min-height:64px;line-height:1.45}[data-page-panel]{padding-top:76px}
 
 #rankingsPage table{font-size:calc(12px * var(--report-font-scale,1));line-height:1.45}#rankingsPage th,#rankingsPage td{font-size:inherit}
+
+/* Task groups keep common actions visible in normal mode. */
+.header-actions{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}.action-group{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--border,#d9e3ee);border-radius:8px}.action-group-label{font-size:11px;font-weight:700;width:100%;color:var(--muted,#64748b)}#normalExportStatus{font-size:12px;max-width:320px}#normalExportStatus:empty{display:none}
+
+.export-subclass-picker{width:min(620px,90vw);max-height:85vh;border:1px solid #cdd8e8;border-radius:14px;padding:24px;color:#17263c;background:#fff;box-shadow:0 16px 60px #17263c40}.export-subclass-picker::backdrop{background:#17263c80}.export-subclass-picker h2{margin:0 0 12px}.export-subclass-picker p{line-height:1.6}.export-picker-list{max-height:42vh;overflow:auto;border-block:1px solid #dbe3ee;margin:12px 0;padding:8px 0}.export-picker-list label{display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer}.export-picker-list input{width:17px;height:17px}.export-picker-actions{display:flex;justify-content:flex-end;gap:8px}.export-picker-count{font-weight:600}
+
+/* Store list names stay on one line within their fixed column. */
+#rankingsPage .store-rankings table{table-layout:fixed}#rankingsPage .store-rankings th:first-child,#rankingsPage .store-rankings td:first-child{text-align:left;padding-left:0;white-space:nowrap;overflow:hidden;text-overflow:clip;overflow-wrap:normal}#rankingsPage .store-name-label{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:clip;text-align:left}

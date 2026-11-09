@@ -1,0 +1,7 @@
+.chart-pan-viewport{position:relative!important;overflow:hidden!important;touch-action:none;cursor:grab;user-select:none}.chart-pan-viewport.is-chart-panning{cursor:grabbing}.chart-pan-clip{position:absolute;inset:0;overflow:hidden}.chart-pan-surface{position:relative;width:100%;height:100%;transform-origin:0 0;overflow:visible;will-change:transform}.chart-pan-surface>svg{display:block}.display-page .rankings-grid>article.chart-editable{display:flex;flex-direction:column;overflow:hidden!important}.display-page .store-rankings.chart-pan-viewport{flex:1;min-height:0}#chartPopup [data-chart-view-tools]{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}#chartPopup [data-chart-view-label]{flex:1 0 100%;font-size:11px;color:var(--muted)}#chartPopup [data-chart-view-input]{width:70px}
+
+#chartPopup [data-chart-axis-tools]{display:grid;gap:7px;border-top:1px solid var(--line);margin:10px 0;padding-top:10px}#chartPopup [data-chart-axis-tools] input[type=range]{width:100%;padding:0}#chartPopup [data-chart-axis-tools] small{color:var(--muted);font-size:10px}
+
+.chart-proportional-text{display:inline-block;transform-origin:center center}
+/* Counter-scaling store text must keep its first character anchored to the left. */
+#rankingsPage .store-rankings th:first-child .chart-proportional-text,#rankingsPage .store-name-label .chart-proportional-text{transform-origin:left center}
