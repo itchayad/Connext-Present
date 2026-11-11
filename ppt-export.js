@@ -3,7 +3,7 @@
  const NS='http://schemas.openxmlformats.org/presentationml/2006/main',REL='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
  const parse=s=>new DOMParser().parseFromString(s,'application/xml'),xml=d=>new XMLSerializer().serializeToString(d);
  function placement(width,height,page='drivers',withScope=false){let box=window.ConnextSlideBoxes?.[page]||{x:0,y:.95,w:13.3333333333,h:6.05};const ratio=Math.min(box.w/width,box.h/height),w=width*ratio,h=height*ratio;return {x:box.x+(box.w-w)/2,y:box.y,w,h};}
- async function build(template,images,pages=['drivers','category','trend','rankings','products','items','volume','promo'],scope=[],slideScopes=[]){
+ async function build(template,images,pages=['drivers','category','trend','rankings','products','groupPerformance','items','volume','customerQty','switching','promo'],scope=[],slideScopes=[]){
   const zip=await JSZip.loadAsync(template),base=await zip.file('ppt/slides/slide1.xml').async('string'),rels=await zip.file('ppt/slides/_rels/slide1.xml.rels').async('string');
   const pres=parse(await zip.file('ppt/presentation.xml').async('string')),list=pres.getElementsByTagNameNS(NS,'sldIdLst')[0];while(list.firstChild)list.removeChild(list.firstChild);
   const pr=parse(await zip.file('ppt/_rels/presentation.xml.rels').async('string'));[...pr.documentElement.children].filter(e=>e.getAttribute('Type')===REL+'/slide').forEach(e=>e.remove());
@@ -25,7 +25,7 @@
   zip.file('ppt/presentation.xml',xml(pres));zip.file('ppt/_rels/presentation.xml.rels',xml(pr));zip.file('[Content_Types].xml',xml(types));return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation',compression:'DEFLATE'});
  }
  function subclassSelections(){return data?C.exportSubclassSelections(data.flatMap((rows,i)=>i===4?[]:rows||[]),applied):[];}
- function syncScope(){const input=document.getElementById('exportSubclassScope');if(!input)return;const choices=subclassSelections(),option=input.querySelector('[value="subclasses"]');option.disabled=!choices.length;if(!choices.length)input.value='current';document.getElementById('exportSubclassCount').textContent=input.value==='subclasses'?choices.length+' Subclass · '+(2+choices.length*7)+' หน้า (รวม Total)':'';}
+ function syncScope(){const input=document.getElementById('exportSubclassScope');if(!input)return;const choices=subclassSelections(),option=input.querySelector('[value="subclasses"]');option.disabled=!choices.length;if(!choices.length)input.value='current';document.getElementById('exportSubclassCount').textContent=input.value==='subclasses'?choices.length+' Subclass · '+(2+choices.length*8)+' หน้า (รวม Total)':'';}
  async function exportPowerPoint(){
   const buttons=[document.getElementById('exportPowerPoint'),document.getElementById('exportPowerPointNormal')],status={set textContent(value){document.getElementById('captureCopyStatus').textContent=value;document.getElementById('normalExportStatus').textContent=value;}};if(!data){status.textContent='กรุณาโหลดข้อมูลก่อน';return;}if(buttons.some(b=>b.disabled))return;
   const scopeInput=document.getElementById('exportSubclassScope'),batch=scopeInput?.value==='subclasses';let selections=batch?subclassSelections():[applied];if(!selections.length){status.textContent='กรุณาเลือก Class ที่ระบุชื่อและกด Run report ก่อน';return;}
@@ -41,7 +41,7 @@
      status.textContent='กำลัง Export '+(images.length+1)+'/'+total+(batch?' · '+(index===1?'Subclass Total':'Subclass '+(index-1)+'/'+(selections.length-1)):'');showPage(page);await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
      if(page==='category')renderCategory();if(page==='products')renderProductRegions();refreshLayout();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
      const panel=[...document.querySelectorAll('[data-page-panel]')].find(el=>el.dataset.pagePanel===page);
-     const has=page==='category'?selectedCategoryView().categories.length:page==='products'?!!panel.querySelector('svg rect,svg circle,svg polyline,svg path'):page==='drivers'?active.tree?.length:page==='trend'||page==='rankings'?active.stores?.length:page==='items'?itemSizeRows().some(r=>r.region_===document.getElementById('itemSizeRegion').value):page==='volume'?C.filtered(data[6]||[],applied).length:C.promoFilter(data[8]||[],applied).length;
+     const has=page==='category'?selectedCategoryView().categories.length:page==='products'?!!panel.querySelector('svg rect,svg circle,svg polyline,svg path'):page==='drivers'?active.tree?.length:page==='trend'||page==='rankings'?active.stores?.length:page==='groupPerformance'?groupPerformanceRowsForSelection().length:page==='items'?itemSizeRows().some(r=>r.region_===document.getElementById('itemSizeRegion').value):page==='customerQty'?customerQtyRows().length:page==='switching'?switchingRows().length:page==='volume'?C.filtered(data[6]||[],applied).length:C.promoFilter(data[8]||[],applied).length;
      window.ConnextHeadings?.apply();window.ConnextCharts?.sync();images.push(has?await window.captureConnextReport(panel,{excludeScope:true}):null);pages.push(page);scopes.push(C.reportScope(applied));
     }
    }

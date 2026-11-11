@@ -66,3 +66,9 @@ body.clean-charts{background:var(--surface)}.clean-charts .section-head,.clean-c
 
 /* Store list names stay on one line within their fixed column. */
 #rankingsPage .store-rankings table{table-layout:fixed}#rankingsPage .store-rankings th:first-child,#rankingsPage .store-rankings td:first-child{text-align:left;padding-left:0;white-space:nowrap;overflow:hidden;text-overflow:clip;overflow-wrap:normal}#rankingsPage .store-name-label{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:clip;text-align:left}
+
+.volume-size-legend{justify-content:center;gap:10px;font-size:calc(11px * var(--volume-font-scale));margin:0 0 8px;flex:none}.volume-size-legend i{display:inline-block;width:8px;height:8px;margin-right:4px}.volume-widget[data-volume-widget=sizes] .volume-widget-content{overflow:auto}.volume-widget[data-volume-widget=sizes] svg{position:static;min-height:100%;height:100%}.volume-widget[data-volume-widget=sizes] h3{min-height:0}
+
+.volume-size-layout .volume-table-shell{min-width:0}.volume-size-layout .volume-summary td{padding:3px 2px;white-space:nowrap;overflow-wrap:normal}.volume-size-layout .volume-summary thead th{padding:3px 2px}
+
+.volume-table-shell{height:100%}#volume .volume-summary{height:100%}.volume-summary thead{height:1px}.volume-summary td,.volume-size-layout .volume-summary td{padding:7px 3px;vertical-align:middle}

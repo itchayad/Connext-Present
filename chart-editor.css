@@ -29,3 +29,11 @@
 /* Static report filters and help belong outside the movable chart stage. */
 .report-options-dock{margin:12px 0;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:10px 14px}.report-options-dock>summary{font-weight:500}.report-options-dock .controls{justify-content:flex-start;margin:10px 0}.report-options-dock .font-tools{display:inline-flex;gap:5px;align-items:center}.report-options-dock .muted{margin:8px 0}.report-options-dock .region-custom{margin:8px 0}.report-options-dock .promo-mechanics-filter{align-items:flex-start}.report-options-dock #promoMechanics{display:flex;flex-wrap:wrap;gap:8px}.layout-tools-hidden .report-options-dock,.presentation .report-options-dock{display:none!important}
 .display-page:not(#driversPage)>section>.section-head{display:none!important}
+/* Keep the trend SVG inside its resized card; period captions have their own row. */
+.display-page #trendBody>.chart-scroll{min-height:0!important;height:100%!important}.display-page #trend .chart{min-height:0;height:100%;display:block}
+
+/* Trend text uses layout pixels instead of shrinking a fixed SVG viewBox. */
+.display-page #trendBody>.chart-scroll{overflow:auto!important}.display-page #trend .trend-sharp-chart{flex:none;shape-rendering:geometricPrecision;text-rendering:optimizeLegibility}
+
+/* The product sales heading belongs to the page, outside the movable chart canvas. */
+.display-page>.product-sales-heading{position:absolute!important;z-index:45!important;width:max-content!important;max-width:calc(100% - 16px)!important;height:auto!important;line-height:1.3;font-size:20px;background:transparent!important;pointer-events:none}.display-page>.product-sales-heading>[data-heading-text],.display-page>.product-sales-heading>.title-edit-handle{pointer-events:auto}

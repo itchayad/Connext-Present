@@ -1,0 +1,28 @@
+'use strict';
+(function(g){const C=g.Connext||(typeof require==='function'?require('./core.js'):{});
+const SWITCH_FILE='11_switching_subclass.csv',aliases=['SITE_FORMAT_NO','DIVISION_NAME','DEPARTMENT_NAME','SUBDEPARTMENT_NAME','CLASS_NAME','Focal_Subclass'],numeric=['Sub_Cust_LY_Only','Sub_Cust_TY_Only','Sub_Cust_Existing','Sub_Total_QTY_LY','Sub_Total_QTY_TY','Net_QTY_Change'];
+function isSwitchFileName(name){return /^11_switching_subclass(?:\s*\(\d+\))?\.csv$/i.test(name);}
+function validateSwitching(parsed){const required=[...aliases,'Other_Subclass','Flow_Type',...numeric],missing=required.filter(k=>!parsed.headers.includes(k.toLowerCase()));if(missing.length)throw Error(SWITCH_FILE+': missing columns '+missing.join(', '));return parsed.rows.filter(r=>Object.values(r).some(v=>String(v).trim())).map((raw,i)=>{const row={...raw,...Object.fromEntries(required.map(k=>[k,raw[k.toLowerCase()]]))};C.DIMS.forEach((d,j)=>row[d]=String(row[aliases[j]]||'').trim());if(C.DIMS.some(d=>!row[d])||!row.Other_Subclass)throw Error(SWITCH_FILE+' row '+(i+2)+': blank scope / subclass');for(const k of numeric){const value=row[k];row[k]=value===''||value==null||/^null$/i.test(value)?null:C.productNumber(value);if(row[k]===null&&value!==''&&value!=null&&!/^null$/i.test(value))throw Error(SWITCH_FILE+' row '+(i+2)+': invalid number in '+k);}return row;});}
+function isSwitchSizeFileName(name){return /^12_switching_size_group(?:\s*\(\d+\))?\.csv$/i.test(name);}
+function validateSizeSwitching(parsed){
+ const rename=k=>k==='focal_size'?'focal_subclass':k==='other_size'?'other_subclass':k.replace(/^size_(cust_|total_qty_)/,'sub_$1');
+ if(!parsed.headers.includes('subclass_name'))throw Error('12_switching_size_group.csv: missing columns SUBCLASS_NAME');
+ const customerKeys=['sub_cust_ly_only','sub_cust_ty_only','sub_cust_existing'],hasSubCustomers=customerKeys.every(k=>parsed.headers.includes(k));
+ const mapped={headers:parsed.headers.map(rename),rows:parsed.rows.map(row=>({...Object.fromEntries(Object.entries(row).map(([k,v])=>[rename(k),v])),...(hasSubCustomers?Object.fromEntries(customerKeys.map(k=>[k,row[k]])): {})}))};
+ try{return validateSwitching(mapped).map(row=>{if(!row.subclass_name)throw Error('blank SUBCLASS_NAME');return {...row,subclass_code_desc:row.subclass_name,_switchingScope:'size',_hasSubCustomers:hasSubCustomers};});}catch(e){throw Error(e.message.replaceAll(SWITCH_FILE,'12_switching_size_group.csv'));}
+}
+function switchingRowsForSelection(data,filters){const detailed=C.isSubclassSelection(filters),classLevel=C.isClassSelection(filters);if(!detailed&&!classLevel)return [];return (data?.[detailed?11:10]||[]).filter(row=>C.DIMS.slice(0,detailed?6:5).every(d=>filters[d]?.has(row[d])));}
+function switchingCustomerRowsForSelection(data,filters){
+ if(C.isClassSelection(filters))return switchingRowsForSelection(data,filters);
+ if(!C.isSubclassSelection(filters))return [];
+ const explicit=switchingRowsForSelection(data,filters).filter(row=>row._hasSubCustomers===true);if(explicit.length)return explicit;
+ return (data?.[10]||[]).filter(row=>C.DIMS.slice(0,5).every(d=>filters[d]?.has(row[d]))&&filters[C.DIMS[5]]?.has(row.Focal_Subclass));
+}
+function switchingView(rows,customerRows=rows.filter(r=>r._switchingScope!=='size'||r._hasSubCustomers===true)){if(new Set(rows.map(r=>JSON.stringify([r._switchingScope||'subclass',...C.DIMS.slice(0,r._switchingScope==='size'?6:5).map(d=>r[d])]))).size>1)throw Error('Switching requires one class / subclass scope');const names=[...new Set(rows.map(r=>r.Focal_Subclass))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})),max=(rs,k)=>{const v=rs.map(r=>r[k]).filter(Number.isFinite);return v.length?Math.max(...v):null;},counts=['Sub_Cust_LY_Only','Sub_Cust_Existing','Sub_Cust_TY_Only'].map(k=>max(customerRows,k)),union=counts.every(Number.isFinite)?counts.reduce((a,b)=>a+b,0):null;return {names,counts,shares:counts.map(v=>union&&Number.isFinite(v)?v/union:null),qty:names.map(name=>{const r=rows.filter(r=>r.Focal_Subclass===name);return {name,ly:max(r,'Sub_Total_QTY_LY'),ty:max(r,'Sub_Total_QTY_TY')};}),matrix:names.map(name=>names.map(other=>{const rs=rows.filter(r=>r.Focal_Subclass===name&&r.Other_Subclass===other),v=rs.map(r=>r.Net_QTY_Change).filter(Number.isFinite);return v.length?v.reduce((a,b)=>a+b,0):null;}))};}
+function switchingPageView(data,filters){const rows=switchingRowsForSelection(data,filters),result=switchingView(rows),volumeRows=C.filtered(data?.[6]||[],filters),scopes=new Set(volumeRows.map(r=>JSON.stringify(C.DIMS.map(d=>r[d])))),venn=C.volumeView(scopes.size>1?[]:volumeRows).venn;let counts=[venn.lapse,venn.existing,venn.new],shares=venn.shares;
+ // Class totals repeat on every switching row: take one complete row, never sum them.
+ if(C.isClassSelection(filters)&&!counts.every(Number.isFinite)){const keys=['Sub_Cust_LY_Only','Sub_Cust_Existing','Sub_Cust_TY_Only'],row=rows.find(r=>keys.every(k=>Number.isFinite(r[k])&&r[k]>=0));if(row){counts=keys.map(k=>row[k]);const union=counts.reduce((a,b)=>a+b,0);shares=counts.map(n=>union?n/union:null);}}
+ return {...result,displayNames:result.names.map(name=>C.isSubclassSelection(filters)?C.sizeGroupName(name):name),counts,shares};}
+function switchingPlotBounds(rects){if(rects.length!==2)return null;const left=Math.max(...rects.map(r=>r.x))+70,right=Math.min(...rects.map(r=>r.x+r.width))-14;return right-left>=60?{left,right}:null;}
+const api={SWITCH_FILE,isSwitchFileName,validateSwitching,isSwitchSizeFileName,validateSizeSwitching,switchingRowsForSelection,switchingCustomerRowsForSelection,switchingView,switchingPageView,switchingPlotBounds};Object.assign(C,api);if(typeof module!=='undefined')module.exports=api;
+})(typeof window==='undefined'?globalThis:window);

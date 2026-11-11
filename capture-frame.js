@@ -4,7 +4,7 @@
  if(typeof module!=='undefined')module.exports={clampFrame};
  if(typeof document==='undefined')return;
  const storage='connext-capture-frames-v1';let frames={},editing=false,drag=null;
- try{const raw=JSON.parse(localStorage.getItem(storage)||'{}');for(const key of ['drivers','category','trend','rankings','products','items','volume','promo'])if(raw[key])frames[key]=clampFrame(raw[key]);}catch{}
+ try{const raw=JSON.parse(localStorage.getItem(storage)||'{}');for(const key of ['drivers','category','trend','rankings','products','groupPerformance','items','volume','customerQty','switching','promo'])if(raw[key])frames[key]=clampFrame(raw[key]);}catch{}
  function defaultFrame(p){const r=p.getBoundingClientRect(),box=window.ConnextSlideBoxes?.[p.dataset.pagePanel],ratio=box?box.w/box.h:2.5,w=Math.min(1,ratio*r.height/r.width),h=Math.min(1,r.width/(ratio*r.height));return {x:(1-w)/2,y:0,w,h};}
  const get=p=>window.ConnextDisplay?{x:0,y:0,w:1,h:1}:clampFrame(frames[p.dataset.pagePanel]||defaultFrame(p));
  const panel=()=>[...document.querySelectorAll('[data-page-panel]')].find(el=>!el.hidden);
@@ -21,5 +21,5 @@
  const end=()=>{if(drag){drag=null;save();}};overlay.onpointerup=end;overlay.onpointercancel=end;
  overlay.tabIndex=0;overlay.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;const p=panel();if(!p)return;e.preventDefault();const f=get(p),r=p.getBoundingClientRect();f.x+=(e.key==='ArrowRight'?10:e.key==='ArrowLeft'?-10:0)/r.width;f.y+=(e.key==='ArrowDown'?10:e.key==='ArrowUp'?-10:0)/r.height;frames[p.dataset.pagePanel]=clampFrame(f);save();sync();};
  window.addEventListener('resize',sync);document.addEventListener('scroll',sync,true);new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class']});document.querySelectorAll('[data-page-panel]').forEach(el=>{new MutationObserver(sync).observe(el,{attributes:true,attributeFilter:['hidden']});if(window.ResizeObserver)new ResizeObserver(sync).observe(el);});
- global.ConnextCaptureFrame={get,all:()=>window.ConnextDisplay?Object.fromEntries(['drivers','category','trend','rankings','products','items','volume','promo'].map(k=>[k,{x:0,y:0,w:1,h:1}])):({...frames}),load:raw=>{frames={};for(const k of ['drivers','category','trend','rankings','products','items','volume','promo'])if(raw?.[k])frames[k]=clampFrame(raw[k]);save();sync();},sync};
+ global.ConnextCaptureFrame={get,all:()=>window.ConnextDisplay?Object.fromEntries(['drivers','category','trend','rankings','products','groupPerformance','items','volume','customerQty','switching','promo'].map(k=>[k,{x:0,y:0,w:1,h:1}])):({...frames}),load:raw=>{frames={};for(const k of ['drivers','category','trend','rankings','products','groupPerformance','items','volume','customerQty','switching','promo'])if(raw?.[k])frames[k]=clampFrame(raw[k]);save();sync();},sync};
 })(globalThis);
