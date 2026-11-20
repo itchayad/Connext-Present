@@ -1,6 +1,6 @@
 'use strict';
 (function(global){
- const pages=['drivers','category','trend','rankings','products','groupPerformance','items','volume','customerQty','switching','promo'];
+ const pages=['drivers','category','trend','rankings','products','groupPerformance','items','volume','customerQty','switching','brandRegions','brandPerformance','brandQty','brandSwitching','promo'];
  function dimensions(raw,screenWidth=1920){const width=Math.round(Math.max(640,Math.min(7680,Number(raw?.width)||Number(screenWidth)||1920))/2)*2;const height=Number.isFinite(Number(raw?.height))&&Number(raw.height)>0?Math.round(Math.max(320,Math.min(3840,Number(raw.height)))):width/2;return {width,height};}
  function fitBoxes(boxes,height){const bottom=Math.max(1,...Object.values(boxes).map(b=>b.y+b.height)),factor=Math.min(1,height/bottom);return Object.fromEntries(Object.entries(boxes).map(([k,b])=>[k,{...b,y:b.y*factor,height:Math.max(80,b.height*factor)}]));}
  if(typeof module!=='undefined')module.exports={dimensions,fitBoxes};if(typeof document==='undefined')return;
@@ -23,7 +23,7 @@
   if(key==='groupPerformance'){fitGroupPerformanceTables();fitted=true;}
   if(key==='items'){fitItemSizeTables();fitted=true;}
   if(key==='customerQty'){applyCustomerQty();fitted=true;}
-  if(key==='switching'){applySwitchingCharts();fitted=true;}
+  if(key==='switching'){applySwitchingCharts();fitted=true;}if(key==='brandRegions')fitted=adapt('.region-chart-canvas',C.REGION_WIDGETS,k=>brandRegionState.layouts[k]||brandRegionDefaultBox(k),b=>brandRegionState.layouts=b,brandApplyRegionLayouts);if(key==='brandPerformance'){brandFitGroupPerformanceTables();fitted=true;}if(key==='brandQty'){brandApplyCustomerQty();fitted=true;}if(key==='brandSwitching'){brandApplySwitchingCharts();fitted=true;}
   if(key==='rankings')fitted=true;
   if(fitted){state.fitted.push(key);persist();if(typeof saveLayout==='function')saveLayout();}
  }
