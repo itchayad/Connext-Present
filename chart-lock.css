@@ -1,0 +1,10 @@
+[data-chart-lock-toggle]{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:9px 14px!important;border:2px solid #0d9488!important;border-radius:9px!important;background:#0f766e!important;color:#fff!important;font-size:14px!important;font-weight:600!important;box-shadow:0 2px 6px #0f766e30}
+[data-chart-lock-toggle] svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+[data-chart-lock-toggle]:hover{background:#115e59!important;border-color:#14b8a6!important}
+[data-chart-lock-toggle][aria-pressed=true]{background:#fbbf24!important;color:#422006!important;border-color:#d97706!important;box-shadow:0 2px 8px #d9770640}
+[data-chart-lock-toggle][aria-pressed=true]:hover{background:#f59e0b!important;border-color:#b45309!important}
+[data-chart-lock-toggle]:focus-visible{outline:3px solid #38bdf8!important;outline-offset:3px}
+.charts-locked #chartSelection,.charts-locked #chartPopup,.charts-locked #headingEditor,.charts-locked .legend-editor{display:none!important}
+.charts-locked [data-page-panel],.charts-locked [data-page-panel] *{resize:none!important}
+.charts-locked [data-chart-key],.charts-locked [data-title-key],.charts-locked [data-legend-key],.charts-locked .chart-pan-viewport{cursor:default!important}
+.charts-locked [data-title-edit-handle],.charts-locked .legend-resize-grip,.charts-locked .region-widget-tools,.charts-locked .region-chart-resize,.charts-locked .map-resize-handle{visibility:hidden!important;pointer-events:none!important}
