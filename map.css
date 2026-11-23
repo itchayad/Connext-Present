@@ -31,3 +31,5 @@
 .store-map-popup dd.positive { color: #178549; }
 .store-map-popup dd.negative { color: var(--negative); }
 .store-map-popup dd.neutral, .store-map-popup dd.na { color: #728092; }
+/* Map branch names are screen-only; keep store ranking tables unchanged. */
+@media print{.store-map-marker span,.store-map-popup{display:none!important}}

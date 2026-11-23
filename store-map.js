@@ -54,6 +54,7 @@
       this.drag = null;
       this.popup = document.createElement("div");
       this.popup.className = "store-map-popup";
+      this.popup.setAttribute("data-html2canvas-ignore", "true");
       this.popup.hidden = true;
       this.root.appendChild(this.popup);
       this.bindInteractions();
@@ -198,7 +199,7 @@
         const left = projected.x - center.x + width / 2;
         const top = projected.y - center.y + height / 2;
         const colour = this.pointColour(point);
-        return `<button class="store-map-marker" data-map-point="${index}" type="button" style="left:${left}px;top:${top}px;--marker-colour:${colour}" aria-label="${escapeHtml(point.name)}" title="${escapeHtml(point.name)}"><i></i>${this.showLabels ? `<span>${escapeHtml(point.name)}</span>` : ""}</button>`;
+        return `<button class="store-map-marker" data-map-point="${index}" type="button" style="left:${left}px;top:${top}px;--marker-colour:${colour}" aria-label="${escapeHtml(point.name)}" title="${escapeHtml(point.name)}"><i></i>${this.showLabels ? `<span data-html2canvas-ignore="true">${escapeHtml(point.name)}</span>` : ""}</button>`;
       }).join("");
       this.renderLegend();
     }
